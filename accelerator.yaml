@@ -22,7 +22,7 @@ engine:
   type: Chain
   transformations:
     - type: Include
-        patterns: [ '**.yaml', '**.md' ]
+      patterns: [ '**.yaml', '**.md' ]
     - type: ReplaceText
       substitutions:
         - text: sample-supply-chain-name
