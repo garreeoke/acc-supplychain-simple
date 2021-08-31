@@ -1,0 +1,23 @@
+apiVersion: kontinue.io/v1alpha1
+kind: ClusterSupplyChain
+metadata:
+  name: sample-supply-chain-name
+spec:
+  selector:
+    app.tanzu.vmware.com/workload-type: sample-workload-type
+  components:
+  - name: source-provider
+    templateRef:
+      kind: ClusterSourceTemplate
+      name: git-repository
+  - name: image-builder
+    templateRef:
+      kind: ClusterImageTemplate
+      name: base-image-build
+    sources:
+    - component: source-provider
+      name: source
+  - name: app-runner
+    templateRef:
+      kind: ClusterConfigTemplate
+      name: kn-svc

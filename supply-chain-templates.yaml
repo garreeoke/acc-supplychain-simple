@@ -1,0 +1,63 @@
+apiVersion: kontinue.io/v1alpha1
+kind: ClusterSourceTemplate
+metadata:
+  name: git-repository
+spec:
+  urlPath: .status.artifact.url
+  revisionPath: .status.artifact.revision
+  template:
+    apiVersion: source.toolkit.fluxcd.io/v1beta1
+    kind: GitRepository
+    metadata:
+      name: $(workload.name)$-source
+    spec:
+      interval: 1m
+      url: $(workload.source.git.url)$
+      ref: $(workload.source.git.ref)$
+      ignore: ""
+---
+apiVersion: kontinue.io/v1alpha1
+kind: ClusterImageTemplate
+metadata:
+  name: base-image-build
+spec:
+  imagePath: .status.latestImage
+  template:
+    apiVersion: kpack.io/v1alpha1
+    kind: Image
+    metadata:
+      name: $(workload.name)$
+      labels:
+        app.kubernetes.io/component: build
+    spec:
+      tag: index.docker.io/garreeoke/$(workload.name)$
+      serviceAccount: build-service-account
+      builder:
+        kind: ClusterBuilder
+        name: base
+      source:
+        blob:
+          url: $(sources[0].url)$
+---
+apiVersion: kontinue.io/v1alpha1
+kind: ClusterConfigTemplate
+metadata:
+  name: kn-svc
+spec:
+  configPath: "some.path"
+  template:
+    apiVersion: serving.knative.dev/v1
+    kind: Service
+    metadata:
+      name: $(workload.name)$
+      labels:
+        app.kubernetes.io/part-of: $(workload.name)$
+    spec:
+      template:
+        metadata: null
+        spec:
+          containers:
+          - image: index.docker.io/garreeoke/$(workload.name)$
+      #selector:
+       # matchLabels:
+        #  app.kubernetes.io/part-of: $(workload.name)$

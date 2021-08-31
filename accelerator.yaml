@@ -1,0 +1,31 @@
+accelerator:
+  displayName: supply-chain-simple
+  description: ""
+  iconUrl: https://raw.githubusercontent.com/simple-starters/icons/master/icon-tanzu-light.png
+  tags:
+  - supply-chain
+  - dev-workload
+  options:
+    - name: supplyChainName
+      label: Name
+      display: true
+      defaultValue: ""
+      required: true
+      inputType: text
+    - name: workloadLabel
+      label: Workload Label
+      display: true
+      defaultValue: ""
+      required: true
+      inputType: text
+engine:
+  type: Chain
+  transformations:
+    - type: Include
+        patterns: [ '**.yaml', '**.md' ]
+    - type: ReplaceText
+      substitutions:
+        - text: sample-supply-chain-name
+          with: "#supplyChainName"
+        - text: sample-workload-type
+          with: "#workloadLabel"
